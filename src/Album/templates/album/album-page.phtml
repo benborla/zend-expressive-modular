@@ -1,0 +1,6 @@
+<h1>List of Albums</h1>
+<?php foreach($this->albums as $idx => $album) :?>
+<p>
+    <a href="/album/view/<?= $album->album_id ?>"><?= ($idx + 1) . '.' . $album->album_title ?></a>
+</p>
+<?php endforeach; ?>
