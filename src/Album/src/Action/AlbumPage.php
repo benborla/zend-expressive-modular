@@ -20,11 +20,24 @@ class AlbumPage implements ServerMiddlewareInterface
 
     private $albumTable;
 
-    public function __construct(Router\RouterInterface $router, Template\TemplateRendererInterface $template = null, AlbumTable $albumTable)
+    private $formElementManager;
+
+    private $config;
+
+    public function __construct(
+        Router\RouterInterface $router,
+        Template\TemplateRendererInterface $template = null,
+        AlbumTable $albumTable,
+        $config,
+        $formElementManager
+    )
     {
-        $this->router     = $router;
-        $this->template   = $template;
-        $this->albumTable = $albumTable;
+        $this->router      = $router;
+        $this->template    = $template;
+        $this->albumTable  = $albumTable;
+        $this->config      = $config;
+        $this->formElementManager = $formElementManager;
+
     }
 
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
@@ -43,7 +56,11 @@ class AlbumPage implements ServerMiddlewareInterface
 
         $albums = $this->albumTable->fetchAll();
 
-        return new HtmlResponse($this->template->render('album::album-page', ['albums' => $albums]));
+        return new HtmlResponse($this->template->render('album::album-page', [
+            'albums' => $albums,
+            'config' => $this->config,
+            'form' => $this->albumForm()
+        ]));
     }
 
     public function addAction(ServerRequestInterface $request, DelegateInterface $delegate)
@@ -52,7 +69,9 @@ class AlbumPage implements ServerMiddlewareInterface
             'album_title' => 'tester updated',
             'album_artist' => 'borla'
         ], 151);
-            return new HtmlResponse($this->template->render('album::album-page-add'));
+            return new HtmlResponse($this->template->render('album::album-page-add',[
+                'form' => $this->albumForm()
+            ]));
 
     }
 
@@ -81,4 +100,17 @@ class AlbumPage implements ServerMiddlewareInterface
             $this->template->render('album::album-page-view', ['album' => $album])
         );
     }
+
+    private function albumForm()
+    {
+        $formConfig = $this->config['plugins']['forms']['album_form'];
+        $formFactory = new \Zend\Form\Factory();
+        $formFactory->setFormElementManager($this->formElementManager);
+
+        $form = $formFactory->createForm($formConfig);
+
+        return $form;
+    }
+
+
 }

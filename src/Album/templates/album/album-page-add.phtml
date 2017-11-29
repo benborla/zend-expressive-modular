@@ -1,1 +1,9 @@
 <h1>Add new Album</h1>
+
+<?php
+$form = $this->form;
+
+echo $this->form()->openTag($form);
+echo $this->MelisFieldCollection($form);
+echo $this->form()->closeTag();
+

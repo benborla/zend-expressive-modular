@@ -38,5 +38,19 @@ return [
             'albumError'  => [__DIR__ . '/../templates/error'],
             'albumLayout' => [__DIR__ . '/../templates/layout'],
         ],
+    ],
+
+    'view_helpers' => [
+        'aliases' => [
+            'MelisFieldCollection' => 'Album\Form\View\Helper\MelisFieldCollection',
+            'MelisFieldRow'        => 'Album\Form\View\Helper\MelisFieldRow',
+        ],
+        'invokables' => [
+
+        ],
+        'factories' => [
+            'Album\Form\View\Helper\MelisFieldCollection' => \Zend\ServiceManager\Factory\InvokableFactory::class,
+            'Album\Form\View\Helper\MelisFieldRow'        => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        ]
     ]
 ];

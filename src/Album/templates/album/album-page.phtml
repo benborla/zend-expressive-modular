@@ -4,3 +4,9 @@
     <a href="/album/view/<?= $album->album_id ?>"><?= ($idx + 1) . '.' . $album->album_title ?></a>
 </p>
 <?php endforeach; ?>
+
+<?php
+print '<pre>';
+print_r($this->config);
+print '</pre>';
+?>

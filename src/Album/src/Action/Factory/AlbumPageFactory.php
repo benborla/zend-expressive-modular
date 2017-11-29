@@ -17,6 +17,10 @@ class AlbumPageFactory
             : null;
         $albumTable = $container->get(AlbumTable::class);
 
-        return new AlbumPage($router, $template, $albumTable);
+        $config = $container->get('config');
+
+        $formElementManager = $container->get('FormElementManager');
+
+        return new AlbumPage($router, $template, $albumTable, $config, $formElementManager);
     }
 }
