@@ -15,5 +15,6 @@ Requirements:
 - Apply zend service manager - DONE, currently on container->get()
 - zend form - DONE
 - zend  validator
-- zend view templating
+- zend view templating - done
+- zend session - done
 - applying child route in fastroute - currently there is no support on making a child route using the configuration driven routes, instead, we have to create our own RoutingFactory which we can feed some route configuration and apply some business logical that can achieve the goal of having a child route.
