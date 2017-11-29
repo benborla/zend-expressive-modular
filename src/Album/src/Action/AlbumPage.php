@@ -8,37 +8,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\ServerRequest;
-use Zend\Expressive\Router;
-use Zend\Expressive\Template;
-use Album\Model\Table\AlbumTable;
-class AlbumPage implements ServerMiddlewareInterface
+use Album\Action\AbstractAction;
+class AlbumPage extends AbstractAction implements ServerMiddlewareInterface
 {
-    private $router;
-
-    private $template;
-
-    private $albumTable;
-
-    private $formElementManager;
-
-    private $config;
-
-    public function __construct(
-        Router\RouterInterface $router,
-        Template\TemplateRendererInterface $template = null,
-        AlbumTable $albumTable,
-        $config,
-        $formElementManager
-    )
-    {
-        $this->router      = $router;
-        $this->template    = $template;
-        $this->albumTable  = $albumTable;
-        $this->config      = $config;
-        $this->formElementManager = $formElementManager;
-
-    }
 
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
@@ -54,23 +26,33 @@ class AlbumPage implements ServerMiddlewareInterface
     public function indexAction(ServerRequestInterface $request, DelegateInterface $delegate)
     {
 
-        $albums = $this->albumTable->fetchAll();
+
+        $text = $this->getSession()->look_for_me = "Borla";
+
+        $locale = null;
+
+        $albums = $this->getAlbumTable()->fetchAll();
+
+        $text = $this->getTranslator()->translate("hello");
 
         return new HtmlResponse($this->template->render('album::album-page', [
             'albums' => $albums,
             'config' => $this->config,
-            'form' => $this->albumForm()
+            'text' => $text,
+            'locale' => $locale
         ]));
     }
 
     public function addAction(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-        $this->albumTable->save([
+
+        $this->getAlbumTable()->save([
             'album_title' => 'tester updated',
             'album_artist' => 'borla'
         ], 151);
             return new HtmlResponse($this->template->render('album::album-page-add',[
-                'form' => $this->albumForm()
+                'form' => $this->albumForm(),
+                'name' => $this->session->look_for_me
             ]));
 
     }
@@ -94,7 +76,7 @@ class AlbumPage implements ServerMiddlewareInterface
             throw new \InvalidArgumentException('id parameter must be provided');
         }
 
-        $album = $this->albumTable->getById($id)->current();
+        $album = $this->getAlbumTable()->getById($id)->current();
 
         return new HtmlResponse(
             $this->template->render('album::album-page-view', ['album' => $album])
@@ -105,7 +87,7 @@ class AlbumPage implements ServerMiddlewareInterface
     {
         $formConfig = $this->config['plugins']['forms']['album_form'];
         $formFactory = new \Zend\Form\Factory();
-        $formFactory->setFormElementManager($this->formElementManager);
+        $formFactory->setFormElementManager($this->getFormElementManager());
 
         $form = $formFactory->createForm($formConfig);
 

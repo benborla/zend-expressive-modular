@@ -1,24 +1,36 @@
 <?php
 namespace Album;
 
+
+use SessionMiddleware\Middleware\SessionMiddleware;
+
 return [
     'routes' => [
         [
             'name'            => 'album',
             'path'            => '/album[/{action}[/{id:[0-9]+}]]',
-            'middleware'      => Action\AlbumPage::class,
+            'middleware'      => [
+                SessionMiddleware::class,
+                Action\AlbumPage::class
+            ],
             'allowed_methods' => ['GET'],
         ],
 
         [
             'name' => 'album.rest',
             'path' => '/album/rest[/{action}[/{id:[0-9]+}]]',
-            'middleware' => Action\AlbumRestPage::class,
+            'middleware' => [
+                SessionMiddleware::class,
+                Action\AlbumPage::class
+            ],
             'allowed_methods' => ['POST']
         ]
     ],
 
     'dependencies' => [
+        'aliases' => [
+            'translator' => \Zend\I18n\Translator\Translator::class,
+        ],
         'invokables' => [
 
         ],
@@ -28,7 +40,12 @@ return [
             Action\AlbumRestPage::class   => Action\Factory\AlbumRestPageFactory::class,
 
             // Models
-            Model\Table\AlbumTable::class => Model\Table\Factory\AlbumTableFactory::class
+            Model\Table\AlbumTable::class => Model\Table\Factory\AlbumTableFactory::class,
+
+            // Translator
+            \Zend\I18n\Translator\Translator::class => \Zend\I18n\Translator\TranslatorServiceFactory::class,
+
+
         ],
     ],
 
@@ -52,5 +69,18 @@ return [
             'Album\Form\View\Helper\MelisFieldCollection' => \Zend\ServiceManager\Factory\InvokableFactory::class,
             'Album\Form\View\Helper\MelisFieldRow'        => \Zend\ServiceManager\Factory\InvokableFactory::class,
         ]
+    ],
+
+    'session' => [
+        'config' => [
+            'options' => [
+                'name' => 'session_album',
+            ],
+        ],
+        'validators' => [
+            // requires zendframework/zend-session
+            //\Zend\Session\Validator\RemoteAddr::class,
+            //\Zend\Session\Validator\HttpUserAgent::class,
+        ],
     ]
 ];
